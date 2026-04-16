@@ -6,8 +6,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-import yaml
-
 
 # Maps logical chart family name -> list of pdef.json group prefixes
 SCHEMA_CHART_MAP: dict[str, list[str]] = {

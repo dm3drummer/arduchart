@@ -71,6 +71,7 @@ class ParamSchema:
         return self._defs.get(param_name)
 
     def exists(self, param_name: str) -> bool:
+        """Return True if param_name exists in the schema."""
         self._ensure_loaded()
         return param_name in self._defs
 
@@ -225,5 +226,6 @@ class ParamSchema:
 
     @property
     def count(self) -> int:
+        """Return the number of parameter definitions in the schema."""
         self._ensure_loaded()
         return len(self._defs)

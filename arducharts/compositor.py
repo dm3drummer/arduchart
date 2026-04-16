@@ -43,7 +43,7 @@ class ParamCompositor:
         cached = self._yaml_cache.get(resolved)
         if cached and cached[0] == mtime:
             return cached[1]
-        with open(resolved) as f:
+        with open(resolved, encoding="utf-8") as f:
             data = yaml.safe_load(f) or {}
         self._yaml_cache[resolved] = (mtime, data)
         return data
@@ -364,12 +364,12 @@ class ParamCompositor:
                     "version": "1.0",
                     "base": [family],
                 }
-                with open(chart_dir / "Chart.yaml", "w") as f:
+                with open(chart_dir / "Chart.yaml", "w", encoding="utf-8") as f:
                     yaml.dump(chart_meta, f, default_flow_style=False, sort_keys=False)
 
                 # defaults.yaml
                 defaults = {"params": dict(sorted(family_params.items()))}
-                with open(chart_dir / "defaults.yaml", "w") as f:
+                with open(chart_dir / "defaults.yaml", "w", encoding="utf-8") as f:
                     yaml.dump(defaults, f, default_flow_style=False, sort_keys=False)
 
                 created_charts.append(chart_name)
@@ -393,7 +393,7 @@ class ParamCompositor:
         header: str | None = None,
     ) -> None:
         """Write params to a .param file (CSV format)."""
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             if header:
                 for line in header.split("\n"):
                     f.write(f"# {line}\n")
@@ -409,7 +409,7 @@ class ParamCompositor:
     def read_param_file(path: str | Path) -> dict[str, Any]:
         """Read a .param file (comma or space separated)."""
         params: dict[str, Any] = {}
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line or line.startswith("#"):

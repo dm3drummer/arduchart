@@ -11,15 +11,18 @@ from typing import Any
 import yaml
 
 from .compositor import ParamCompositor
-from .mavlink_io import HAS_MAVLINK, MAVLinkConnection, require_mavlink
+from .mavlink_io import MAVLinkConnection, require_mavlink
 from .schema import ParamSchema
 from .schema_map import build_schema_charts_data
 from .utils import (
     DEFAULT_BAUD,
-    SENSOR_BITS,
+    collect_export_files,
     compute_param_diff,
+    lint_plane_config,
     norm_value,
+    rebuild_schema_charts,
     version_less_than,
+    write_export_zip,
 )
 
 
@@ -51,6 +54,7 @@ def _check_firmware_compat(
 
 
 def cmd_list(args: argparse.Namespace) -> None:
+    """List all available charts with metadata."""
     compositor = ParamCompositor(args.config_dir)
     charts = compositor.list_charts()
     if not charts:
@@ -68,6 +72,7 @@ def cmd_list(args: argparse.Namespace) -> None:
 
 
 def cmd_build(args: argparse.Namespace) -> None:
+    """Compile a plane config into a .param file."""
     compositor = ParamCompositor(args.config_dir)
     result = compositor.load_plane(args.config)
 
@@ -93,6 +98,7 @@ def cmd_build(args: argparse.Namespace) -> None:
 
 
 def cmd_show(args: argparse.Namespace) -> None:
+    """Print merged parameters with descriptions."""
     compositor = ParamCompositor(args.config_dir)
     result = compositor.load_plane(args.config)
     schema = ParamSchema(args.config_dir)
@@ -130,6 +136,7 @@ def cmd_show(args: argparse.Namespace) -> None:
 
 
 def cmd_validate(args: argparse.Namespace) -> None:
+    """Validate a plane config against ArduPilot schema."""
     compositor = ParamCompositor(args.config_dir)
     try:
         result = compositor.load_plane(args.config)
@@ -176,55 +183,15 @@ def cmd_validate(args: argparse.Namespace) -> None:
 
 
 def cmd_lint(args: argparse.Namespace) -> None:
+    """Lint a plane config for common mistakes."""
     compositor = ParamCompositor(args.config_dir)
     result = compositor.load_plane(args.config)
 
     plane_path = Path(args.config)
     if not plane_path.is_absolute():
         plane_path = compositor.config_dir / plane_path
-    plane_config = compositor.load_yaml(plane_path)
 
-    warnings: list[str] = []
-    installed = set(result["installed"])
-
-    # Check: values reference installed charts
-    values = plane_config.get("values", {})
-    for chart_name in values:
-        if chart_name not in installed:
-            warnings.append(f"values.{chart_name}: chart is not installed")
-
-    # Check: values override params that exist in the target chart's defaults
-    for chart_name, overrides in values.items():
-        if not isinstance(overrides, dict):
-            continue
-        defaults_yaml = compositor.charts_dir / chart_name / "defaults.yaml"
-        if defaults_yaml.exists():
-            defaults = compositor.load_yaml(defaults_yaml)
-            chart_param_names = set(defaults.get("params", {}).keys())
-            for param in overrides:
-                if param not in chart_param_names:
-                    warnings.append(
-                        f"values.{chart_name}.{param}: not in chart defaults "
-                        f"(new param, not an override)"
-                    )
-
-    # Check: same param set by multiple chart defaults
-    param_sources: dict[str, list[str]] = {}
-    for chart_name in result["installed"]:
-        defaults_yaml = compositor.charts_dir / chart_name / "defaults.yaml"
-        if defaults_yaml.exists():
-            defaults = compositor.load_yaml(defaults_yaml)
-            for param in defaults.get("params", {}):
-                param_sources.setdefault(param, []).append(chart_name)
-    for param, charts in param_sources.items():
-        if len(charts) > 1:
-            warnings.append(
-                f"{param}: set in multiple charts: {', '.join(charts)} (last wins)"
-            )
-
-    # Check: chart params match declared base schema
-    base_warnings = compositor.validate_chart_bases()
-    warnings.extend(base_warnings)
+    warnings = lint_plane_config(compositor, plane_path, result)
 
     print(f"Linting: {result['name']}")
     print(f"Charts: {len(result['installed'])}, Params: {len(result['params'])}")
@@ -237,6 +204,7 @@ def cmd_lint(args: argparse.Namespace) -> None:
 
 
 def cmd_diff_planes(args: argparse.Namespace) -> None:
+    """Compare two plane configs side by side."""
     compositor = ParamCompositor(args.config_dir)
     plane_a = compositor.load_plane(args.config1)
     plane_b = compositor.load_plane(args.config2)
@@ -283,6 +251,7 @@ def cmd_diff_planes(args: argparse.Namespace) -> None:
 
 
 def cmd_search(args: argparse.Namespace) -> None:
+    """Search parameter names and descriptions."""
     schema = ParamSchema(args.config_dir)
     results = schema.search(args.query)
     if not results:
@@ -299,6 +268,7 @@ def cmd_search(args: argparse.Namespace) -> None:
 
 
 def cmd_describe(args: argparse.Namespace) -> None:
+    """Show detailed ArduPilot param descriptions."""
     schema = ParamSchema(args.config_dir)
     for name in args.params:
         text = schema.describe(name.upper())
@@ -310,6 +280,7 @@ def cmd_describe(args: argparse.Namespace) -> None:
 
 
 def cmd_create_chart(args: argparse.Namespace) -> None:
+    """Scaffold a new chart directory."""
     charts_dir = Path(args.config_dir) / "charts"
     schema_dir = Path(args.config_dir) / "schema"
     chart_dir = charts_dir / args.name
@@ -346,17 +317,17 @@ def cmd_create_chart(args: argparse.Namespace) -> None:
         chart_meta["base"] = list(args.base)
     if args.depends:
         chart_meta["depends"] = list(args.depends)
-    with open(chart_dir / "Chart.yaml", "w") as f:
+    with open(chart_dir / "Chart.yaml", "w", encoding="utf-8") as f:
         yaml.dump(chart_meta, f, default_flow_style=False, sort_keys=False)
 
     # defaults.yaml
     params = [p.upper() for p in (args.params or [])]
     data = {"params": {p: 0 for p in params}} if params else {"params": {}}
-    with open(chart_dir / "defaults.yaml", "w") as f:
+    with open(chart_dir / "defaults.yaml", "w", encoding="utf-8") as f:
         yaml.dump(data, f, default_flow_style=False, sort_keys=False)
 
     print(f"Created: {chart_dir}/")
-    print(f"  Chart.yaml")
+    print("  Chart.yaml")
     print(f"  defaults.yaml ({len(params)} params)")
 
     if args.base:
@@ -375,48 +346,14 @@ def cmd_update_schema(args: argparse.Namespace) -> None:
     """Download latest param definitions and rebuild schema charts."""
     config_dir = Path(args.config_dir)
 
-    # Step 1: download latest pdef.json
     print("Downloading latest ArduPilot param definitions...")
     schema = ParamSchema(args.config_dir)
     schema.refresh()
     print(f"  {schema.count} parameters cached.\n")
 
-    # Step 2: rebuild schema chart catalog
     print("Rebuilding schema charts...")
     families = build_schema_charts_data(config_dir)
-
-    charts_dir = config_dir / "schema"
-    created = 0
-    updated = 0
-
-    for family, params in sorted(families.items()):
-        if family == "_unmapped":
-            continue
-
-        chart_dir = charts_dir / family
-        chart_yaml_path = chart_dir / "Chart.yaml"
-
-        if chart_dir.exists() and chart_yaml_path.exists():
-            meta = yaml.safe_load(chart_yaml_path.read_text()) or {}
-            if set(meta.get("schema_params", [])) == set(params):
-                continue
-            meta["schema_params"] = params
-            with open(chart_yaml_path, "w") as f:
-                yaml.dump(meta, f, default_flow_style=False, sort_keys=False)
-            updated += 1
-            print(f"  updated {family} ({len(params)} schema params)")
-        else:
-            chart_dir.mkdir(parents=True, exist_ok=True)
-            meta = {
-                "name": family,
-                "description": f"ArduPilot {family} parameters",
-                "version": "schema",
-                "schema_params": params,
-            }
-            with open(chart_yaml_path, "w") as f:
-                yaml.dump(meta, f, default_flow_style=False, sort_keys=False)
-            created += 1
-            print(f"  created {family} ({len(params)} schema params)")
+    created, updated = rebuild_schema_charts(config_dir, families)
 
     unmapped = families.get("_unmapped", [])
     if unmapped:
@@ -442,6 +379,7 @@ def cmd_update_schema(args: argparse.Namespace) -> None:
 
 
 def cmd_diff(args: argparse.Namespace) -> None:
+    """Diff a plane config against the FC or a .param file."""
     compositor = ParamCompositor(args.config_dir)
     result = compositor.load_plane(args.config)
 
@@ -475,11 +413,10 @@ def cmd_diff(args: argparse.Namespace) -> None:
 
 
 def cmd_flash(args: argparse.Namespace) -> None:
+    """Flash parameters to a flight controller."""
     require_mavlink()
     compositor = ParamCompositor(args.config_dir)
     result = compositor.load_plane(args.config)
-    failed: list[str] = []
-
     with MAVLinkConnection(args.port, args.baud) as mav:
         if args.changed_only:
             print("Reading current params to find differences...")
@@ -508,7 +445,7 @@ def cmd_flash(args: argparse.Namespace) -> None:
             if resp.lower() != "y":
                 print("Aborted.")
                 return
-        failed = mav.flash_params(params_to_write, dry_run=args.dry_run)
+        mav.flash_params(params_to_write, dry_run=args.dry_run)
 
         if not args.dry_run and args.verify:
             print("\nVerifying — reading back params from FC...")
@@ -528,6 +465,7 @@ def cmd_flash(args: argparse.Namespace) -> None:
 
 
 def cmd_read(args: argparse.Namespace) -> None:
+    """Read all parameters from the FC."""
     require_mavlink()
     with MAVLinkConnection(args.port, args.baud) as mav:
         params = mav.read_all_params()
@@ -539,7 +477,7 @@ def cmd_read(args: argparse.Namespace) -> None:
                     "description": f"Read from {args.port}",
                     "params": dict(sorted(params.items())),
                 }
-                with open(args.output, "w") as f:
+                with open(args.output, "w", encoding="utf-8") as f:
                     yaml.dump(
                         data, f, default_flow_style=False, sort_keys=False
                     )
@@ -555,6 +493,7 @@ def cmd_read(args: argparse.Namespace) -> None:
 
 
 def cmd_import(args: argparse.Namespace) -> None:
+    """Create a plane config from FC or .param file."""
     compositor = ParamCompositor(args.config_dir)
 
     if args.port:
@@ -594,7 +533,7 @@ def cmd_import(args: argparse.Namespace) -> None:
         planes_dir.mkdir(parents=True, exist_ok=True)
         output = str(planes_dir / f"{safe_name}.yaml")
 
-    with open(output, "w") as f:
+    with open(output, "w", encoding="utf-8") as f:
         yaml.dump(plane, f, default_flow_style=False, sort_keys=False)
     print(f"\nWritten: {output}")
 
@@ -614,41 +553,22 @@ def cmd_export_chart(args: argparse.Namespace) -> None:
         charts/<name>/<family>/Chart.yaml
         charts/<name>/<family>/defaults.yaml
     """
-    import zipfile
-
     config_dir = Path(args.config_dir)
     name = args.name
 
-    plane_path = config_dir / "planes" / f"{name}.yaml"
-    charts_dir = config_dir / "charts" / name
-
-    if not plane_path.exists() and not charts_dir.is_dir():
+    files = collect_export_files(config_dir, name)
+    if not files:
         print(f"Nothing found for '{name}'. Expected planes/{name}.yaml or charts/{name}/")
         sys.exit(1)
 
-    files: list[tuple[Path, str]] = []
-
-    # Plane YAML with real relative path
-    if plane_path.exists():
-        rel = str(plane_path.relative_to(config_dir))
-        files.append((plane_path, rel))
-
-    # Charts with real relative paths
-    if charts_dir.is_dir():
-        for f in sorted(charts_dir.rglob("*")):
-            if f.is_file():
-                rel = str(f.relative_to(config_dir))
-                files.append((f, rel))
-
     if args.output:
-        output = args.output
+        output = Path(args.output)
     else:
         export_dir = config_dir / "exports"
         export_dir.mkdir(parents=True, exist_ok=True)
-        output = str(export_dir / f"{name}.zip")
-    with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as zf:
-        for filepath, arcname in files:
-            zf.write(filepath, arcname)
+        output = export_dir / f"{name}.zip"
+
+    write_export_zip(files, output)
 
     print(f"Exported {len(files)} files to {output}")
     for _, arcname in files:
@@ -708,6 +628,7 @@ def cmd_import_chart(args: argparse.Namespace) -> None:
 
 
 def main() -> None:
+    """CLI entry point — parse arguments and dispatch to command handlers."""
     parser = argparse.ArgumentParser(
         prog="arducharts",
         description="ArduPilot YAML Configuration Compositor (Helm-style)",

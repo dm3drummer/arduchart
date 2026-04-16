@@ -37,7 +37,7 @@ class MAVLinkConnection:
 
     def read_all_params(
         self,
-        on_progress: "Callable[[int, int | None], None] | None" = None,
+        on_progress: Callable[[int, int | None], None] | None = None,
     ) -> dict[str, Any]:
         """Read all parameters from the flight controller.
 
@@ -133,6 +133,7 @@ class MAVLinkConnection:
         }
 
     def close(self) -> None:
+        """Close the MAVLink connection."""
         self.conn.close()
 
     def __enter__(self) -> MAVLinkConnection:

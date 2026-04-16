@@ -32,8 +32,11 @@ from arducharts import (
     ParamSchema,
     norm_value,
     compute_param_diff,
+    collect_export_files,
+    lint_plane_config,
+    rebuild_schema_charts,
+    write_export_zip,
     HAS_MAVLINK,
-    SENSOR_BITS,
     DEFAULT_BAUD,
 )
 from arducharts.schema_map import build_schema_charts_data
@@ -364,7 +367,9 @@ class EditParamDialog(ModalScreen[str | None]):
                     self._all_enum_options,
                     id="ep-select",
                     prompt="Pick a value...",
-                    value=self._current_value if self._current_value in dict(vals) else Select.BLANK,
+                    value=(self._current_value
+                           if self._current_value in dict(vals)
+                           else Select.BLANK),
                 )
 
             yield Input(
@@ -830,25 +835,70 @@ class APConfigApp(App):
                                 placeholder="Filter...",
                                 id="overview-search",
                             )
-                            yield Button("Copy", id="copy-overview-table", classes="copy-btn", disabled=True)
-                            yield Button("Refresh", id="refresh-btn", classes="copy-btn")
+                            yield Button(
+                                "Copy", id="copy-overview-table",
+                                classes="copy-btn", disabled=True,
+                            )
+                            yield Button(
+                                "Refresh", id="refresh-btn",
+                                classes="copy-btn",
+                            )
                         with Horizontal(classes="action-row"):
-                            yield Button("Build .param", id="build-btn", variant="primary", disabled=True, classes="copy-btn")
-                            yield Button("Import .param", id="import-param-file-btn", variant="success", classes="copy-btn")
-                            yield Button("Export .zip", id="export-chart-btn", classes="copy-btn")
-                            yield Button("Import .zip", id="import-chart-btn", classes="copy-btn")
-                            yield Button("Rename", id="rename-btn", classes="copy-btn")
-                            yield Button("Delete", id="delete-btn", variant="error", classes="copy-btn")
-                            yield Button("Update Schema", id="update-schema-btn", classes="copy-btn")
+                            yield Button(
+                                "Build .param", id="build-btn",
+                                variant="primary", disabled=True,
+                                classes="copy-btn",
+                            )
+                            yield Button(
+                                "Import .param",
+                                id="import-param-file-btn",
+                                variant="success", classes="copy-btn",
+                            )
+                            yield Button(
+                                "Export .zip", id="export-chart-btn",
+                                classes="copy-btn",
+                            )
+                            yield Button(
+                                "Import .zip", id="import-chart-btn",
+                                classes="copy-btn",
+                            )
+                            yield Button(
+                                "Rename", id="rename-btn",
+                                classes="copy-btn",
+                            )
+                            yield Button(
+                                "Delete", id="delete-btn",
+                                variant="error", classes="copy-btn",
+                            )
+                            yield Button(
+                                "Update Schema",
+                                id="update-schema-btn",
+                                classes="copy-btn",
+                            )
                         yield DataTable(id="overview-table", cursor_type="row")
                     with TabPane("Validate", id="tab-validate"):
-                        yield Static("Check param names, ranges, enums against ArduPilot schema. Lint for config mistakes (unused overrides, multi-chart conflicts).", classes="tab-desc")
+                        yield Static(
+                            "Check param names, ranges, enums against "
+                            "ArduPilot schema. Lint for config mistakes "
+                            "(unused overrides, multi-chart conflicts).",
+                            classes="tab-desc",
+                        )
                         with Horizontal(classes="action-row"):
-                            yield Button("Validate", id="validate-btn", variant="primary", disabled=True)
-                            yield Button("Copy", id="copy-validate-log", classes="copy-btn", disabled=True)
+                            yield Button(
+                                "Validate", id="validate-btn",
+                                variant="primary", disabled=True,
+                            )
+                            yield Button(
+                                "Copy", id="copy-validate-log",
+                                classes="copy-btn", disabled=True,
+                            )
                         yield Log(id="validate-log")
                     with TabPane("Diff", id="tab-diff-planes"):
-                        yield Static("Compare params between plane configs or a live FC.", classes="tab-desc")
+                        yield Static(
+                            "Compare params between plane configs "
+                            "or a live FC.",
+                            classes="tab-desc",
+                        )
                         diff_sources = [("FC (live)", "__fc__")] + self._scan_planes()
                         with Horizontal(id="diff-selects-row"):
                             yield Select(
@@ -864,8 +914,15 @@ class APConfigApp(App):
                                 id="diff-btn",
                                 variant="primary",
                             )
-                            yield Button("Copy", id="copy-diff-table", classes="copy-btn", disabled=True)
-                            yield Button("Diff vs .param", id="diff-param-file-btn", classes="copy-btn")
+                            yield Button(
+                                "Copy", id="copy-diff-table",
+                                classes="copy-btn", disabled=True,
+                            )
+                            yield Button(
+                                "Diff vs .param",
+                                id="diff-param-file-btn",
+                                classes="copy-btn",
+                            )
                         with Horizontal(id="diff-progress-row"):
                             yield ProgressBar(
                                 id="diff-progress",
@@ -875,7 +932,12 @@ class APConfigApp(App):
                             yield Static("", id="diff-pct")
                         yield DataTable(id="diff-table")
                     with TabPane("Search", id="tab-search"):
-                        yield Static("Full-text search across all ArduPilot param names, display names, and descriptions.", classes="tab-desc")
+                        yield Static(
+                            "Full-text search across all ArduPilot "
+                            "param names, display names, and "
+                            "descriptions.",
+                            classes="tab-desc",
+                        )
                         yield Input(
                             placeholder="Search params...",
                             id="search-input",
@@ -893,15 +955,37 @@ class APConfigApp(App):
                             yield Checkbox("Verify", id="flash-verify", value=True)
                             yield Checkbox("Dry run", id="flash-dry-run")
                         with Vertical(id="flash-legend"):
-                            yield Static("Changed only — read FC first, write only params that differ", classes="tab-desc")
-                            yield Static("Verify — read back each param after writing to confirm", classes="tab-desc")
-                            yield Static("Dry run — show what would be written without touching the FC", classes="tab-desc")
+                            yield Static(
+                                "Changed only — read FC first, "
+                                "write only params that differ",
+                                classes="tab-desc",
+                            )
+                            yield Static(
+                                "Verify — read back each param "
+                                "after writing to confirm",
+                                classes="tab-desc",
+                            )
+                            yield Static(
+                                "Dry run — show what would be "
+                                "written without touching the FC",
+                                classes="tab-desc",
+                            )
                         with Horizontal(classes="action-row"):
-                            yield Button("Flash", id="flash-btn", variant="warning", disabled=True)
-                            yield Button("Copy", id="copy-flash-log", classes="copy-btn", disabled=True)
+                            yield Button(
+                                "Flash", id="flash-btn",
+                                variant="warning", disabled=True,
+                            )
+                            yield Button(
+                                "Copy", id="copy-flash-log",
+                                classes="copy-btn", disabled=True,
+                            )
                         yield Log(id="flash-log")
                     with TabPane("FC Read", id="tab-fc-read"):
-                        yield Static("Read all parameters from the connected FC via MAVLink.", classes="tab-desc")
+                        yield Static(
+                            "Read all parameters from the "
+                            "connected FC via MAVLink.",
+                            classes="tab-desc",
+                        )
                         yield Button(
                             "Read Params",
                             id="fc-read-btn",
@@ -1163,7 +1247,7 @@ class APConfigApp(App):
             params[param_name] = parsed
             data["params"] = params
 
-            with open(defaults_path, "w") as f:
+            with open(defaults_path, "w", encoding="utf-8") as f:
                 yaml.dump(data, f, default_flow_style=False, sort_keys=False)
 
             self.notify(f"{param_name} = {parsed}")
@@ -1563,51 +1647,13 @@ class APConfigApp(App):
             # -- Lint checks --
             lint_warnings: list[str] = []
 
-            # Re-load raw plane config for lint
+            # Run lint checks
             plane_path = Path(self.active_plane_rel)
             if not plane_path.is_absolute():
                 plane_path = compositor.config_dir / plane_path
-            plane_config = compositor.load_yaml(plane_path)
-
-            installed = set(result["installed"])
-
-            # Check: values reference installed charts
-            values = plane_config.get("values", {})
-            for chart_name in values:
-                if chart_name not in installed:
-                    lint_warnings.append(
-                        f"values.{chart_name}: chart is not installed"
-                    )
-
-            # Check: value overrides actually in chart defaults
-            for chart_name, overrides in values.items():
-                if not isinstance(overrides, dict):
-                    continue
-                defaults_yaml = compositor.charts_dir / chart_name / "defaults.yaml"
-                if defaults_yaml.exists():
-                    defaults = compositor.load_yaml(defaults_yaml)
-                    chart_param_names = set(defaults.get("params", {}).keys())
-                    for param in overrides:
-                        if param not in chart_param_names:
-                            lint_warnings.append(
-                                f"values.{chart_name}.{param}: not in chart defaults "
-                                f"(new param, not an override)"
-                            )
-
-            # Check: params set in multiple chart defaults
-            param_sources: dict[str, list[str]] = {}
-            for chart_name in result["installed"]:
-                defaults_yaml = compositor.charts_dir / chart_name / "defaults.yaml"
-                if defaults_yaml.exists():
-                    defaults = compositor.load_yaml(defaults_yaml)
-                    for param in defaults.get("params", {}):
-                        param_sources.setdefault(param, []).append(chart_name)
-            for param, charts in param_sources.items():
-                if len(charts) > 1:
-                    lint_warnings.append(
-                        f"{param}: set in multiple charts: "
-                        f"{', '.join(charts)} (last wins)"
-                    )
+            lint_warnings.extend(
+                lint_plane_config(compositor, plane_path, result)
+            )
 
             # -- Output results --
             log.write_line("")
@@ -1893,7 +1939,7 @@ class APConfigApp(App):
                 planes_dir = Path(self.config_dir) / "planes"
                 planes_dir.mkdir(parents=True, exist_ok=True)
                 output = planes_dir / f"{name}.yaml"
-                with open(output, "w") as f:
+                with open(output, "w", encoding="utf-8") as f:
                     yaml.dump(plane, f, default_flow_style=False, sort_keys=False)
 
                 self.notify(
@@ -1937,7 +1983,7 @@ class APConfigApp(App):
             planes_dir = Path(self.config_dir) / "planes"
             planes_dir.mkdir(parents=True, exist_ok=True)
             output = planes_dir / f"{name}.yaml"
-            with open(output, "w") as f:
+            with open(output, "w", encoding="utf-8") as f:
                 yaml.dump(plane, f, default_flow_style=False, sort_keys=False)
 
             self.notify(
@@ -1957,8 +2003,6 @@ class APConfigApp(App):
 
     def _export_chart_zip(self) -> None:
         """Export the active plane + its charts as a portable .zip."""
-        import zipfile
-
         name = None
         if self.active_plane_rel:
             name = Path(self.active_plane_rel).stem
@@ -1974,21 +2018,7 @@ class APConfigApp(App):
                 return
 
             config_dir = Path(self.config_dir)
-            files: list[tuple[Path, str]] = []
-
-            # Plane YAML with real relative path
-            plane_path = config_dir / "planes" / f"{name}.yaml"
-            if plane_path.exists():
-                rel = str(plane_path.relative_to(config_dir))
-                files.append((plane_path, rel))
-
-            # Charts with real relative paths
-            charts_dir = config_dir / "charts" / name
-            if charts_dir.is_dir():
-                for f in sorted(charts_dir.rglob("*")):
-                    if f.is_file():
-                        rel = str(f.relative_to(config_dir))
-                        files.append((f, rel))
+            files = collect_export_files(config_dir, name)
 
             if not files:
                 self.notify(f"Nothing to export for '{name}'", severity="warning")
@@ -1997,11 +2027,7 @@ class APConfigApp(App):
             export_dir = config_dir / "exports"
             export_dir.mkdir(parents=True, exist_ok=True)
             output = export_dir / f"{filename}.zip"
-
-            with zipfile.ZipFile(str(output), "w", zipfile.ZIP_DEFLATED) as zf:
-                for filepath, arcname in files:
-                    zf.write(filepath, arcname)
-
+            write_export_zip(files, output)
             self.notify(f"Exported {len(files)} files → {output}")
 
         self.push_screen(
@@ -2145,7 +2171,7 @@ class APConfigApp(App):
                 log.write_line("")
                 log.write_line("Verifying -- reading back params from FC...")
                 readback = self.mav_connection.read_all_params()
-                v_changes, v_missing, v_matching = compute_param_diff(
+                v_changes, v_missing, _ = compute_param_diff(
                     params_to_write, readback
                 )
                 if v_changes or v_missing:
@@ -2266,10 +2292,10 @@ class APConfigApp(App):
                         self.notify(f"Plane '{new_name}' already exists.", severity="error")
                         return
                     # Update the name field inside the YAML
-                    with open(old_path) as f:
+                    with open(old_path, encoding="utf-8") as f:
                         data = yaml.safe_load(f) or {}
                     data["name"] = new_name
-                    with open(old_path, "w") as f:
+                    with open(old_path, "w", encoding="utf-8") as f:
                         yaml.dump(data, f, default_flow_style=False, sort_keys=False)
                     old_path.rename(new_path)
                     self.active_plane = str(new_path)
@@ -2287,10 +2313,10 @@ class APConfigApp(App):
                     # Update name in Chart.yaml
                     chart_yaml = old_chart_dir / "Chart.yaml"
                     if chart_yaml.exists():
-                        with open(chart_yaml) as f:
+                        with open(chart_yaml, encoding="utf-8") as f:
                             meta = yaml.safe_load(f) or {}
                         meta["name"] = new_name
-                        with open(chart_yaml, "w") as f:
+                        with open(chart_yaml, "w", encoding="utf-8") as f:
                             yaml.dump(meta, f, default_flow_style=False, sort_keys=False)
                     old_chart_dir.rename(new_chart_dir)
                     # Update references in all plane configs
@@ -2331,7 +2357,7 @@ class APConfigApp(App):
         if planes_dir.exists():
             for plane_file in planes_dir.glob("*.yaml"):
                 try:
-                    with open(plane_file) as f:
+                    with open(plane_file, encoding="utf-8") as f:
                         data = yaml.safe_load(f) or {}
                     changed = False
                     charts = data.get("charts", [])
@@ -2344,7 +2370,7 @@ class APConfigApp(App):
                         values[new_name] = values.pop(old_name)
                         changed = True
                     if changed:
-                        with open(plane_file, "w") as f:
+                        with open(plane_file, "w", encoding="utf-8") as f:
                             yaml.dump(data, f, default_flow_style=False, sort_keys=False)
                 except Exception:
                     pass
@@ -2354,7 +2380,7 @@ class APConfigApp(App):
         if charts_dir.exists():
             for chart_yaml in charts_dir.rglob("Chart.yaml"):
                 try:
-                    with open(chart_yaml) as f:
+                    with open(chart_yaml, encoding="utf-8") as f:
                         meta = yaml.safe_load(f) or {}
                     depends = meta.get("depends", [])
                     changed = False
@@ -2363,7 +2389,7 @@ class APConfigApp(App):
                             depends[i] = new_name
                             changed = True
                     if changed:
-                        with open(chart_yaml, "w") as f:
+                        with open(chart_yaml, "w", encoding="utf-8") as f:
                             yaml.dump(meta, f, default_flow_style=False, sort_keys=False)
                 except Exception:
                     pass
@@ -2386,36 +2412,7 @@ class APConfigApp(App):
             schema.refresh()
 
             families = build_schema_charts_data(config_dir)
-            charts_dir = config_dir / "schema"
-            created = 0
-            updated = 0
-
-            for family, params in sorted(families.items()):
-                if family == "_unmapped":
-                    continue
-
-                chart_dir = charts_dir / family
-                chart_yaml_path = chart_dir / "Chart.yaml"
-
-                if chart_dir.exists() and chart_yaml_path.exists():
-                    meta = yaml.safe_load(chart_yaml_path.read_text()) or {}
-                    if set(meta.get("schema_params", [])) == set(params):
-                        continue
-                    meta["schema_params"] = params
-                    with open(chart_yaml_path, "w") as f:
-                        yaml.dump(meta, f, default_flow_style=False, sort_keys=False)
-                    updated += 1
-                else:
-                    chart_dir.mkdir(parents=True, exist_ok=True)
-                    meta = {
-                        "name": family,
-                        "description": f"ArduPilot {family} parameters",
-                        "version": "schema",
-                        "schema_params": params,
-                    }
-                    with open(chart_yaml_path, "w") as f:
-                        yaml.dump(meta, f, default_flow_style=False, sort_keys=False)
-                    created += 1
+            created, updated = rebuild_schema_charts(config_dir, families)
 
             total_families = len(families) - (1 if "_unmapped" in families else 0)
             self.app.call_from_thread(
