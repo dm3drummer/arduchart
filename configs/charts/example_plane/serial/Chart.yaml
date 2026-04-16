@@ -1,0 +1,5 @@
+name: serial
+description: serial params imported from FC
+version: '1.0'
+base:
+- serial

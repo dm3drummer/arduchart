@@ -1,0 +1,4 @@
+params:
+  SCHED_DEBUG: 0
+  SCHED_LOOP_RATE: 50
+  SCHED_OPTIONS: 0

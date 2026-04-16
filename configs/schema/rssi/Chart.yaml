@@ -1,0 +1,11 @@
+name: rssi
+description: ArduPilot rssi parameters
+version: schema
+schema_params:
+- RSSI_ANA_PIN
+- RSSI_CHANNEL
+- RSSI_CHAN_HIGH
+- RSSI_CHAN_LOW
+- RSSI_PIN_HIGH
+- RSSI_PIN_LOW
+- RSSI_TYPE

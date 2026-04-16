@@ -1,0 +1,12 @@
+name: parachute
+description: ArduPilot parachute parameters
+version: schema
+schema_params:
+- CHUTE_ALT_MIN
+- CHUTE_CRT_SINK
+- CHUTE_DELAY_MS
+- CHUTE_ENABLED
+- CHUTE_OPTIONS
+- CHUTE_SERVO_OFF
+- CHUTE_SERVO_ON
+- CHUTE_TYPE

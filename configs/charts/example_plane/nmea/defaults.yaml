@@ -1,0 +1,3 @@
+params:
+  NMEA_MSG_EN: 3
+  NMEA_RATE_MS: 100

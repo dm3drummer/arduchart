@@ -1,0 +1,5 @@
+name: landing
+description: landing params imported from FC
+version: '1.0'
+base:
+- landing

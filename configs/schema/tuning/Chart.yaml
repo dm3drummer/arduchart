@@ -1,0 +1,12 @@
+name: tuning
+description: ArduPilot tuning parameters
+version: schema
+schema_params:
+- TUNE_CHAN
+- TUNE_CHAN_MAX
+- TUNE_CHAN_MIN
+- TUNE_ERR_THRESH
+- TUNE_MODE_REVERT
+- TUNE_PARAM
+- TUNE_RANGE
+- TUNE_SELECTOR

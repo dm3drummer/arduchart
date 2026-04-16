@@ -1,0 +1,5 @@
+name: gps
+description: gps params imported from FC
+version: '1.0'
+base:
+- gps

@@ -1,0 +1,5 @@
+name: example_battery
+description: "Example: 6S 5000mAh LiPo with voltage and current monitoring"
+version: "1.0"
+base:
+  - battery

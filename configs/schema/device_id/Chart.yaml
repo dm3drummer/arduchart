@@ -1,0 +1,9 @@
+name: device_id
+description: ArduPilot device_id parameters
+version: schema
+schema_params:
+- DID_BARO_ACC
+- DID_CANDRIVER
+- DID_ENABLE
+- DID_MAVPORT
+- DID_OPTIONS

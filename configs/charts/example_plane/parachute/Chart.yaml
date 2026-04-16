@@ -1,0 +1,5 @@
+name: parachute
+description: parachute params imported from FC
+version: '1.0'
+base:
+- parachute

@@ -1,0 +1,22 @@
+name: follow
+description: ArduPilot follow parameters
+version: schema
+schema_params:
+- FOLL_ACCEL_D
+- FOLL_ACCEL_H
+- FOLL_ACCEL_NE
+- FOLL_ALT_TYPE
+- FOLL_DIST_MAX
+- FOLL_ENABLE
+- FOLL_JERK_D
+- FOLL_JERK_H
+- FOLL_JERK_NE
+- FOLL_OFS_TYPE
+- FOLL_OFS_X
+- FOLL_OFS_Y
+- FOLL_OFS_Z
+- FOLL_OPTIONS
+- FOLL_POS_P
+- FOLL_SYSID
+- FOLL_TIMEOUT
+- FOLL_YAW_BEHAVE

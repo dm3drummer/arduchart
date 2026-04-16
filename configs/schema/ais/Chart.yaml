@@ -1,0 +1,8 @@
+name: ais
+description: ArduPilot ais parameters
+version: schema
+schema_params:
+- AIS_LIST_MAX
+- AIS_LOGGING
+- AIS_TIME_OUT
+- AIS_TYPE

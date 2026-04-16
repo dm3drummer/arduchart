@@ -1,0 +1,11 @@
+name: power_up
+description: ArduPilot power_up parameters
+version: schema
+schema_params:
+- PUP_ARSPD_START
+- PUP_ELEV_OFS
+- PUP_ENABLE
+- PUP_NG_JERK_LIM
+- PUP_NG_LIM
+- PUP_PITCH
+- PUP_PITCH_START

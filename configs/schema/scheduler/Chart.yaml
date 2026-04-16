@@ -1,0 +1,7 @@
+name: scheduler
+description: ArduPilot scheduler parameters
+version: schema
+schema_params:
+- SCHED_DEBUG
+- SCHED_LOOP_RATE
+- SCHED_OPTIONS

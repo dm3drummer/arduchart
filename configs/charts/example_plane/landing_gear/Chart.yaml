@@ -1,0 +1,5 @@
+name: landing_gear
+description: landing_gear params imported from FC
+version: '1.0'
+base:
+- landing_gear

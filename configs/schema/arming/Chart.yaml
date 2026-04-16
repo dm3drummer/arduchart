@@ -1,0 +1,13 @@
+name: arming
+description: ArduPilot arming parameters
+version: schema
+schema_params:
+- ARMING_ACCTHRESH
+- ARMING_BBOX_SPD
+- ARMING_CRSDP_IGN
+- ARMING_MAGTHRESH
+- ARMING_MIS_ITEMS
+- ARMING_OPTIONS
+- ARMING_REQUIRE
+- ARMING_RUDDER
+- ARMING_SKIPCHK

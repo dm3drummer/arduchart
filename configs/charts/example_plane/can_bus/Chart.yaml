@@ -1,0 +1,5 @@
+name: can_bus
+description: can_bus params imported from FC
+version: '1.0'
+base:
+- can_bus

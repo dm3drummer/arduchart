@@ -1,0 +1,22 @@
+name: scripting
+description: ArduPilot scripting parameters
+version: schema
+schema_params:
+- SCR_DEBUG_OPTS
+- SCR_DIR_DISABLE
+- SCR_ENABLE
+- SCR_HEAP_SIZE
+- SCR_LD_CHECKSUM
+- SCR_RUN_CHECKSUM
+- SCR_SDEV1_PROTO
+- SCR_SDEV2_PROTO
+- SCR_SDEV3_PROTO
+- SCR_SDEV_EN
+- SCR_THD_PRIORITY
+- SCR_USER1
+- SCR_USER2
+- SCR_USER3
+- SCR_USER4
+- SCR_USER5
+- SCR_USER6
+- SCR_VM_I_COUNT

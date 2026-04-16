@@ -1,0 +1,17 @@
+name: logging
+description: ArduPilot logging parameters
+version: schema
+schema_params:
+- LOG_BACKEND_TYPE
+- LOG_BLK_RATEMAX
+- LOG_DARM_RATEMAX
+- LOG_DISARMED
+- LOG_FILE_BUFSIZE
+- LOG_FILE_DSRMROT
+- LOG_FILE_MB_FREE
+- LOG_FILE_RATEMAX
+- LOG_FILE_TIMEOUT
+- LOG_MAV_BUFSIZE
+- LOG_MAV_RATEMAX
+- LOG_MAX_FILES
+- LOG_REPLAY

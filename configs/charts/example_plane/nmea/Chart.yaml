@@ -1,0 +1,5 @@
+name: nmea
+description: nmea params imported from FC
+version: '1.0'
+base:
+- nmea

@@ -1,0 +1,12 @@
+name: gripper
+description: ArduPilot gripper parameters
+version: schema
+schema_params:
+- GRIP_AUTOCLOSE
+- GRIP_CAN_ID
+- GRIP_ENABLE
+- GRIP_GRAB
+- GRIP_NEUTRAL
+- GRIP_REGRAB
+- GRIP_RELEASE
+- GRIP_TYPE

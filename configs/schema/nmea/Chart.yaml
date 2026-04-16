@@ -1,0 +1,6 @@
+name: nmea
+description: ArduPilot nmea parameters
+version: schema
+schema_params:
+- NMEA_MSG_EN
+- NMEA_RATE_MS

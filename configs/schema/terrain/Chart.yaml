@@ -1,0 +1,10 @@
+name: terrain
+description: ArduPilot terrain parameters
+version: schema
+schema_params:
+- TERRAIN_CACHE_SZ
+- TERRAIN_ENABLE
+- TERRAIN_MARGIN
+- TERRAIN_OFS_MAX
+- TERRAIN_OPTIONS
+- TERRAIN_SPACING

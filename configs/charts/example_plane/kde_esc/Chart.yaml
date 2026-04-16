@@ -1,0 +1,5 @@
+name: kde_esc
+description: kde_esc params imported from FC
+version: '1.0'
+base:
+- kde_esc

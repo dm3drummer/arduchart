@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+.idea/
+.DS_Store
+.venv/
+*.egg-info/
+dist/
+
+# Generated / user data
+configs/.cache/
+configs/build/
+configs/exports/
+configs/.DS_Store

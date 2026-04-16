@@ -1,0 +1,5 @@
+name: rpm
+description: rpm params imported from FC
+version: '1.0'
+base:
+- rpm

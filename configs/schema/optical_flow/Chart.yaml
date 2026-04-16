@@ -1,0 +1,13 @@
+name: optical_flow
+description: ArduPilot optical_flow parameters
+version: schema
+schema_params:
+- FLOW_ADDR
+- FLOW_FXSCALER
+- FLOW_FYSCALER
+- FLOW_OPTIONS
+- FLOW_ORIENT_YAW
+- FLOW_POS_X
+- FLOW_POS_Y
+- FLOW_POS_Z
+- FLOW_TYPE

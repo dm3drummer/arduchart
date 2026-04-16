@@ -1,0 +1,13 @@
+name: landing_gear
+description: ArduPilot landing_gear parameters
+version: schema
+schema_params:
+- LGR_DEPLOY_ALT
+- LGR_DEPLOY_PIN
+- LGR_DEPLOY_POL
+- LGR_ENABLE
+- LGR_OPTIONS
+- LGR_RETRACT_ALT
+- LGR_STARTUP
+- LGR_WOW_PIN
+- LGR_WOW_POL

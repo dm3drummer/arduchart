@@ -1,0 +1,5 @@
+name: board
+description: board params imported from FC
+version: '1.0'
+base:
+- board

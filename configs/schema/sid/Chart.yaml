@@ -1,0 +1,12 @@
+name: sid
+description: ArduPilot sid parameters
+version: schema
+schema_params:
+- SID_AXIS
+- SID_F_START_HZ
+- SID_F_STOP_HZ
+- SID_MAGNITUDE
+- SID_T_FADE_IN
+- SID_T_FADE_OUT
+- SID_T_REC
+- SID_XY_CTRL_MUL

@@ -1,0 +1,5 @@
+name: arming
+description: arming params imported from FC
+version: '1.0'
+base:
+- arming

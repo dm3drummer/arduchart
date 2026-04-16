@@ -1,0 +1,10 @@
+name: mission
+description: ArduPilot mission parameters
+version: schema
+schema_params:
+- MIS_OPTIONS
+- MIS_RESTART
+- MIS_TOTAL
+- RALLY_INCL_HOME
+- RALLY_LIMIT_KM
+- RALLY_TOTAL

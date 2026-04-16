@@ -1,0 +1,5 @@
+name: airspeed
+description: airspeed params imported from FC
+version: '1.0'
+base:
+- airspeed

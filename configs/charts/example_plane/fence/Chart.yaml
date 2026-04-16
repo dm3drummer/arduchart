@@ -1,0 +1,5 @@
+name: fence
+description: fence params imported from FC
+version: '1.0'
+base:
+- fence

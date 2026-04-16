@@ -1,0 +1,4 @@
+params:
+  ADSB_TYPE: 0
+  AFS_ENABLE: 0
+  AVD_ENABLE: 0

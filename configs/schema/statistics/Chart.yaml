@@ -1,0 +1,10 @@
+name: statistics
+description: ArduPilot statistics parameters
+version: schema
+schema_params:
+- STAT_BOOTCNT
+- STAT_DISTFLWN
+- STAT_FLTCNT
+- STAT_FLTTIME
+- STAT_RESET
+- STAT_RUNTIME

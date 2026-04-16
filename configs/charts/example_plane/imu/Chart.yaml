@@ -1,0 +1,5 @@
+name: imu
+description: imu params imported from FC
+version: '1.0'
+base:
+- imu

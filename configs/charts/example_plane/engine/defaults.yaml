@@ -1,0 +1,5 @@
+params:
+  EFI_TYPE: 0
+  ESC_TLM_MAV_OFS: 0
+  GEN_TYPE: 0
+  ICE_ENABLE: 0

@@ -1,0 +1,18 @@
+name: fence
+description: ArduPilot fence parameters
+version: schema
+schema_params:
+- FENCE_ACTION
+- FENCE_ALT_MAX
+- FENCE_ALT_MIN
+- FENCE_AUTOENABLE
+- FENCE_ENABLE
+- FENCE_MARGIN
+- FENCE_MARGIN_XY
+- FENCE_NTF_FREQ
+- FENCE_OPTIONS
+- FENCE_RADIUS
+- FENCE_RET_ALT
+- FENCE_RET_RALLY
+- FENCE_TOTAL
+- FENCE_TYPE

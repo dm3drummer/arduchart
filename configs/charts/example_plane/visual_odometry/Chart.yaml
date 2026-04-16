@@ -1,0 +1,5 @@
+name: visual_odometry
+description: visual_odometry params imported from FC
+version: '1.0'
+base:
+- visual_odometry

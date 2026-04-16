@@ -1,0 +1,9 @@
+name: eahrs
+description: ArduPilot eahrs parameters
+version: schema
+schema_params:
+- EAHRS_LOG_RATE
+- EAHRS_OPTIONS
+- EAHRS_RATE
+- EAHRS_SENSORS
+- EAHRS_TYPE

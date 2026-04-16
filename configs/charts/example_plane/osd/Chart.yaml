@@ -1,0 +1,5 @@
+name: osd
+description: osd params imported from FC
+version: '1.0'
+base:
+- osd

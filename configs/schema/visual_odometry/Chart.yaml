@@ -1,0 +1,15 @@
+name: visual_odometry
+description: ArduPilot visual_odometry parameters
+version: schema
+schema_params:
+- VISO_DELAY_MS
+- VISO_ORIENT
+- VISO_POS_M_NSE
+- VISO_POS_X
+- VISO_POS_Y
+- VISO_POS_Z
+- VISO_QUAL_MIN
+- VISO_SCALE
+- VISO_TYPE
+- VISO_VEL_M_NSE
+- VISO_YAW_M_NSE

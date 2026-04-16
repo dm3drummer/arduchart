@@ -1,0 +1,5 @@
+name: kde_esc
+description: ArduPilot kde_esc parameters
+version: schema
+schema_params:
+- KDE_NPOLE

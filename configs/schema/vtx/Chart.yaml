@@ -1,0 +1,11 @@
+name: vtx
+description: ArduPilot vtx parameters
+version: schema
+schema_params:
+- VTX_BAND
+- VTX_CHANNEL
+- VTX_ENABLE
+- VTX_FREQ
+- VTX_MAX_POWER
+- VTX_OPTIONS
+- VTX_POWER

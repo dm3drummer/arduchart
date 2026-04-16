@@ -1,0 +1,11 @@
+name: custom_rotation
+description: ArduPilot custom_rotation parameters
+version: schema
+schema_params:
+- CUST_ROT1_PITCH
+- CUST_ROT1_ROLL
+- CUST_ROT1_YAW
+- CUST_ROT2_PITCH
+- CUST_ROT2_ROLL
+- CUST_ROT2_YAW
+- CUST_ROT_ENABLE

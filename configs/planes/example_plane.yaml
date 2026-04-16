@@ -1,0 +1,154 @@
+name: example_plane
+description: Imported from FC (1541 params)
+charts:
+- example_plane/ahrs
+- example_plane/airspeed
+- example_plane/arming
+- example_plane/barometer
+- example_plane/battery
+- example_plane/board
+- example_plane/camera
+- example_plane/can_bus
+- example_plane/compass
+- example_plane/custom_rotation
+- example_plane/eahrs
+- example_plane/ekf
+- example_plane/engine
+- example_plane/fence
+- example_plane/flight_control
+- example_plane/follow
+- example_plane/gps
+- example_plane/gripper
+- example_plane/imu
+- example_plane/kde_esc
+- example_plane/landing
+- example_plane/landing_gear
+- example_plane/logging
+- example_plane/mission
+- example_plane/mount
+- example_plane/networking
+- example_plane/nmea
+- example_plane/notifications
+- example_plane/optical_flow
+- example_plane/osd
+- example_plane/parachute
+- example_plane/quadplane
+- example_plane/rangefinder
+- example_plane/rc
+- example_plane/relay
+- example_plane/rpm
+- example_plane/rssi
+- example_plane/safety
+- example_plane/scheduler
+- example_plane/scripting
+- example_plane/serial
+- example_plane/servo
+- example_plane/soaring
+- example_plane/statistics
+- example_plane/terrain
+- example_plane/tuning
+- example_plane/visual_odometry
+- example_plane/vtx
+extra_params:
+  ARMING_CHECK: 0
+  CAM_RC_TYPE: 0
+  EK3_MAX_FLOW: 2.5
+  FLTMODE_GCSBLOCK: 0
+  FS_SHORT_TIMEOUT: 1.5
+  GLIDE_SLOPE_MIN: 15
+  GLIDE_SLOPE_THR: 5
+  OSD_CALLSIGNID: 0
+  SR0_ADSB: 5
+  SR0_EXTRA1: 4
+  SR0_EXTRA2: 4
+  SR0_EXTRA3: 2
+  SR0_EXT_STAT: 2
+  SR0_PARAMS: 10
+  SR0_POSITION: 2
+  SR0_RAW_CTRL: 1
+  SR0_RAW_SENS: 2
+  SR0_RC_CHAN: 2
+  SR1_ADSB: 5
+  SR1_EXTRA1: 4
+  SR1_EXTRA2: 4
+  SR1_EXTRA3: 4
+  SR1_EXT_STAT: 4
+  SR1_PARAMS: 10
+  SR1_POSITION: 4
+  SR1_RAW_CTRL: 1
+  SR1_RAW_SENS: 4
+  SR1_RC_CHAN: 4
+  SR2_ADSB: 5
+  SR2_EXTRA1: 4
+  SR2_EXTRA2: 4
+  SR2_EXTRA3: 2
+  SR2_EXT_STAT: 2
+  SR2_PARAMS: 10
+  SR2_POSITION: 2
+  SR2_RAW_CTRL: 1
+  SR2_RAW_SENS: 2
+  SR2_RC_CHAN: 2
+  SR3_ADSB: 5
+  SR3_EXTRA1: 2
+  SR3_EXTRA2: 4
+  SR3_EXTRA3: 2
+  SR3_EXT_STAT: 2
+  SR3_PARAMS: 10
+  SR3_POSITION: 2
+  SR3_RAW_CTRL: 1
+  SR3_RAW_SENS: 2
+  SR3_RC_CHAN: 2
+  SR4_ADSB: 5
+  SR4_EXTRA1: 4
+  SR4_EXTRA2: 4
+  SR4_EXTRA3: 2
+  SR4_EXT_STAT: 2
+  SR4_PARAMS: 10
+  SR4_POSITION: 2
+  SR4_RAW_CTRL: 1
+  SR4_RAW_SENS: 2
+  SR4_RC_CHAN: 2
+  SR5_ADSB: 5
+  SR5_EXTRA1: 1
+  SR5_EXTRA2: 1
+  SR5_EXTRA3: 1
+  SR5_EXT_STAT: 1
+  SR5_PARAMS: 10
+  SR5_POSITION: 1
+  SR5_RAW_CTRL: 1
+  SR5_RAW_SENS: 1
+  SR5_RC_CHAN: 1
+  SR6_ADSB: 5
+  SR6_EXTRA1: 1
+  SR6_EXTRA2: 1
+  SR6_EXTRA3: 1
+  SR6_EXT_STAT: 1
+  SR6_PARAMS: 10
+  SR6_POSITION: 1
+  SR6_RAW_CTRL: 1
+  SR6_RAW_SENS: 1
+  SR6_RC_CHAN: 1
+  SYSID_ENFORCE: 0
+  SYSID_MYGCS: 255
+  SYSID_THISMAV: 1
+  TELEM_DELAY: 0
+  VTX_MODEL: 9
+  VTX_POW_CMW1: 25
+  VTX_POW_CMW2: 25
+  VTX_POW_CMW3: 500
+  VTX_POW_CMW4: 500
+  VTX_POW_CMW5: 2500
+  VTX_POW_CMW6: 2500
+  VTX_POW_CVAL1: 25
+  VTX_POW_CVAL2: 25
+  VTX_POW_CVAL3: 200
+  VTX_POW_CVAL4: 200
+  VTX_POW_CVAL5: 600
+  VTX_POW_CVAL6: 600
+  VTX_POW_LEVELS: 6
+  VTX_PRESET1: 40
+  VTX_PRESET2: 40
+  VTX_PRESET3: 44
+  VTX_PRESET4: 44
+  VTX_PRESET5: 47
+  VTX_PRESET6: 47

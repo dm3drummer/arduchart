@@ -1,0 +1,5 @@
+params:
+  CAM1_TYPE: 0
+  CAM2_TYPE: 0
+  CAM_AUTO_ONLY: 0
+  CAM_MAX_ROLL: 0
